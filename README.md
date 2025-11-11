@@ -46,6 +46,96 @@ What it shows:
 - Connecting to PostgreSQL with `psycopg2`
 - Creating a table, inserting rows, and listing them through HTTP endpoints
 
+#### Prepare PostgreSQL (optional but recommended)
+
+If you want a dedicated database/user for the sample, run the following SQL in `psql`
+or your favorite admin tool:
+
+```sql
+CREATE DATABASE flask_demo;
+CREATE USER flask_user WITH PASSWORD 'change_me';
+GRANT ALL PRIVILEGES ON DATABASE flask_demo TO flask_user;
+```
+
+Explanation:
+
+- `CREATE DATABASE` makes an empty database the app can own.
+- `CREATE USER` provisions a login for the app.
+- `GRANT ALL PRIVILEGES` lets that user create tables and modify data inside the new database.
+
+Update `DATABASE_URL` in `.env` so it points to this user/database combination, for example
+`postgresql://flask_user:change_me@localhost:5432/flask_demo`.
+
+#### SQL essentials for PostgreSQL beginners
+
+Below is a mini cheat sheet so you can get comfortable with SQL even if you are new
+to databases. You can run these commands inside `psql` (the PostgreSQL shell) after
+connecting to the database you created.
+
+```sql
+-- 1. Create a table to store data
+CREATE TABLE items (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    value NUMERIC(10, 2) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Insert sample rows
+INSERT INTO items (name, value) VALUES ('Desk', 120.00);
+INSERT INTO items (name, value) VALUES ('Chair', 49.99), ('Lamp', 30.50);
+
+-- 3. Query the data
+SELECT id, name, value FROM items;
+SELECT * FROM items WHERE value > 50 ORDER BY value DESC;
+
+-- 4. Update and delete
+UPDATE items SET value = 44.99 WHERE name = 'Chair';
+DELETE FROM items WHERE name = 'Lamp';
+
+-- 5. Alter the table (for example, add a new column)
+ALTER TABLE items ADD COLUMN in_stock BOOLEAN DEFAULT TRUE;
+
+-- 6. Create an index to speed up lookups
+CREATE INDEX idx_items_name ON items(name);
+
+-- 7. Drop objects when you no longer need them
+DROP INDEX idx_items_name;
+DROP TABLE items;
+```
+
+Understanding the statements:
+
+- `CREATE TABLE` defines the table structure. `SERIAL` auto-increments integers, `PRIMARY KEY` uniquely identifies rows, `TEXT` stores arbitrary strings, `NUMERIC(10, 2)` stores up to 10 digits with 2 decimal places, and `TIMESTAMPTZ` is a timestamp with timezone. `DEFAULT NOW()` fills a column automatically when a row is inserted.
+- `INSERT INTO ... VALUES` adds new rows. Listing multiple sets of parentheses inserts multiple rows in one go.
+- `SELECT` reads data. `WHERE` filters rows, `ORDER BY` sorts results, and `*` means "all columns".
+- `UPDATE ... SET ... WHERE` changes data. Always include a `WHERE` clause so you do not accidentally update every row.
+- `DELETE FROM ... WHERE` removes rows. Again, `WHERE` limits the deletion scope.
+- `ALTER TABLE ... ADD COLUMN` modifies existing structures without recreating the table.
+- `CREATE INDEX` adds a lookup helper so queries by indexed columns are faster. Later, `DROP INDEX` removes it.
+- `DROP TABLE` deletes the table definition and its data. Use with caution.
+
+Common SQL keywords you will see often:
+
+- `NULL` - represents missing/unknown values. `NOT NULL` ensures data must be provided.
+- `UNIQUE` - enforces that a column cannot contain duplicate values.
+- `CHECK` - adds a constraint, for example `CHECK (value > 0)`.
+- `REFERENCES` - declares a foreign key relationship to another table.
+- `CASCADE` - when used with `DROP` or foreign keys, instructs PostgreSQL to apply the operation to related objects.
+- `LIMIT` - returns only the first N rows of a query, useful for pagination or quick looks.
+- `OFFSET` - skips a number of rows before returning results (often paired with `LIMIT`).
+
+Additional helpful `psql` meta commands (type them without the trailing semicolon):
+
+- `\l` lists databases.
+- `\c flask_demo` connects to a database.
+- `\dt` lists tables in the current database.
+- `\d items` shows the schema of a table (`\d+ items` includes indexes and comments).
+- `\x` toggles expanded output which is useful for wide tables.
+- `\q` quits `psql`.
+
+Practice these steps a few times and you will have the foundation needed for most Flask + PostgreSQL projects.
+
 How to try it:
 
 1. Copy the sample environment file:
