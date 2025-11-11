@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Flask HTML Starter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <main>
+      <h1>Welcome to Your Flask HTML Starter</h1>
+      <p>
+        This page is rendered from
+        <code>templates/index.html</code> using the
+        <code>render_template</code> helper. Edit the template, refresh the
+        browser, and you will see your changes instantly.
+      </p>
+
+      <h2>What are you seeing?</h2>
+      <ul>
+        {% for title, description in features %}
+        <li>
+          <strong>{{ title }}:</strong>
+          {{ description }}
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="actions">
+        <button type="button" data-js="highlight">Toggle highlight</button>
+        <button type="button" data-js="timestamp">Update timestamp</button>
+      </div>
+
+      <p>
+        The current (UTC) time was rendered by Flask:
+        <strong data-js="timestamp-value">
+          {{ current_time.strftime("%Y-%m-%d %H:%M:%S") }}Z
+        </strong>
+      </p>
+
+      <footer>
+        Edit <code>app.py</code> to add routes, pass new data, and grow this
+        example into your next project.
+      </footer>
+    </main>
+  </body>
+</html>

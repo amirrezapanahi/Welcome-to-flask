@@ -36,6 +36,25 @@ dependencies. The general workflow is:
 4. Create a `.env` file if the example ships with `.env.example`
 5. `python app.py`
 
+### Example: Flask + HTML templates
+
+Location: `examples/html-basic`
+
+What it shows:
+
+- Rendering HTML via `render_template`
+- Passing Python data into Jinja2 loops and expressions
+- Keeping markup inside `templates/` plus custom CSS/JS in `static/`
+
+How to try it:
+
+1. ```bash
+   cd examples/html-basic
+   pip install -r requirements.txt
+   python app.py
+   ```
+2. Open <http://127.0.0.1:5000/> and tweak `templates/index.html` to see live updates.
+
 ### Example: Flask + PostgreSQL
 
 Location: `examples/postgresql`
@@ -154,11 +173,27 @@ How to try it:
    python app.py
    ```
 
-4. Hit the endpoints:
+4. Hit the endpoints highlighted below to explore the SQL lifecycle.
 
-   - `GET /init` - create the `items` table
-   - `GET /add?name=Chair&value=49.99` - insert a row
-   - `GET /list` - print the stored rows in plain text
+#### HTTP endpoints cheat sheet
+
+| Method + Path | What it demonstrates |
+| --- | --- |
+| `GET /health` | Quick connection/latency test (`SELECT NOW()` from PostgreSQL). |
+| `GET /init` | Idempotent table + index creation so you always start from a known schema. |
+| `POST /reset` | Drops and recreates the schema to illustrate destructive DDL. |
+| `POST /seed` | Bulk inserts with optional `replace=true` and UPSERT logic on `name`. |
+| `GET /items` | Lists all rows as JSON, including timestamps. |
+| `POST /items` | JSON create endpoint (`name`, `value`, optional `note`). |
+| `GET /items/<id>` | Fetch a single row; returns `404` when it does not exist. |
+| `PUT /items/<id>` | Replace the full row while keeping constraint checks (`UNIQUE`, `CHECK`). |
+| `PATCH /items/<id>` | Partial updates (`name`, `value`, `note`) with automatic `updated_at`. |
+| `DELETE /items/<id>` | Hard-delete rows and confirm the affected id. |
+| `GET /search` | Filter by partial name plus optional `min_value`, `max_value`, `limit`. |
+| `GET /stats` | Aggregate functions (`COUNT`, `SUM`, `MIN`, `MAX`, `AVG`). |
+| `GET /schema` | Introspect the table via `information_schema.columns`. |
+| `GET /add?name=Chair&value=49.99` | Legacy query-parameter insert for quick browser testing. |
+| `GET /list` | Tab-separated export for copy/paste into spreadsheets or the shell. |
 
 Feel free to duplicate this folder as a template for other database backends or
 deployment targets.
