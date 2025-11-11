@@ -5,14 +5,6 @@ smallest possible Flask app, while the `examples/` directory collects focused
 recipes that show how to combine Flask with popular options (databases, env
 management, etc.).
 
-```
-.
-|-- app.py                 # Hello, World! demo
-|-- requirements.txt       # Dependencies for the root demo
-`-- examples/
-    `-- postgresql/        # Flask + PostgreSQL sample project
-```
-
 ## Quick start (core demo)
 
 1. Create a virtual environment (optional but recommended).
